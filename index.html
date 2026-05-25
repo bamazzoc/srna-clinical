@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CRNA Ref">
+<meta name="theme-color" content="#0a0c10">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>CRNA Clinical Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0c10; --bg2:#111318; --bg3:#181c24; --bg4:#1e2330;
+  --teal:#00c9b1; --teal-dim:rgba(0,201,177,0.12); --teal-mid:rgba(0,201,177,0.25);
+  --red:#ff4757; --red-dim:rgba(255,71,87,0.12);
+  --gold:#ffc048; --gold-dim:rgba(255,192,72,0.12);
+  --blue:#4facfe; --blue-dim:rgba(79,172,254,0.12);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.12);
+  --green:#10b981; --green-dim:rgba(16,185,129,0.12);
+  --text:#e2e8f0; --text-dim:#8892a4; --text-dimmer:#4a5568;
+  --border:rgba(255,255,255,0.07); --border-bright:rgba(255,255,255,0.12);
+  --mono:'Share Tech Mono',monospace; --sans:'Barlow',sans-serif; --cond:'Barlow Condensed',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+#app{display:flex;flex-direction:column;min-height:100vh}
+
+/* HEADER */
+.app-header{position:sticky;top:0;z-index:100;background:rgba(10,12,16,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding-top:env(safe-area-inset-top,0)}
+.header-inner{display:flex;align-items:center;gap:10px;padding:12px 16px}
+.header-logo{font-family:var(--cond);font-size:18px;font-weight:700;letter-spacing:.08em;color:var(--teal)}
+.header-logo span{color:var(--text-dim);font-weight:400}
+.header-badge{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-dimmer);border:1px solid var(--border);border-radius:4px;padding:2px 6px}
+
+/* NAV */
+.nav-tabs{display:flex;overflow-x:auto;padding:0 4px;border-top:1px solid var(--border);scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dimmer);padding:8px 10px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-tab:hover{color:var(--text-dim)}
+.nav-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* CONTENT */
+.content{flex:1;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom,0) + 24px)}
+.module{display:none}
+.module.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* MODULE HERO */
+.module-hero{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.module-hero-title{font-family:var(--cond);font-size:22px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--teal)}
+.module-hero-sub{font-size:12px;color:var(--text-dim);margin-top:4px}
+.progress-bar{background:var(--bg3);border-radius:999px;height:4px;margin:10px 0 4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:999px;transition:width .4s ease}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none;gap:10px}
+.card-header:hover{background:var(--bg3)}
+.card-title{font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.card-chevron{color:var(--text-dimmer);font-size:11px;transition:transform .25s;flex-shrink:0}
+.card.open .card-chevron{transform:rotate(180deg)}
+.card-body{display:none;padding:0 14px 14px}
+.card.open .card-body{display:block}
+
+/* CHECKLIST */
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.check-item:last-child{border-bottom:none}
+.check-box{width:18px;height:18px;border:2px solid var(--text-dimmer);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;margin-top:1px}
+.check-box.checked{background:var(--teal);border-color:var(--teal)}
+.check-box.checked::after{content:'✓';color:#000;font-size:11px;font-weight:700}
+.check-label{font-size:13px;font-weight:500}
+.check-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:4px;margin-right:4px}
+.tag-m{background:var(--blue-dim);color:var(--blue)}
+.tag-s{background:var(--red-dim);color:var(--red)}
+.tag-a{background:var(--teal-dim);color:var(--teal)}
+.tag-i{background:var(--purple-dim);color:var(--purple)}
+.tag-d{background:var(--gold-dim);color:var(--gold)}
+.tag-mon{background:var(--green-dim);color:var(--green)}
+
+/* PIMP QA */
+.pimp-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.pimp-q{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;cursor:pointer}
+.pimp-q:hover{background:var(--bg4)}
+.pimp-icon{font-size:14px;flex-shrink:0;padding-top:1px;color:var(--gold)}
+.pimp-question{font-size:13px;font-weight:500;flex:1}
+.pimp-toggle{font-family:var(--mono);font-size:10px;color:var(--text-dimmer);flex-shrink:0;padding-top:2px}
+.pimp-answer{display:none;padding:10px 12px 12px 36px;font-size:12px;line-height:1.6;color:var(--text-dim);border-top:1px solid var(--border)}
+.pimp-item.open .pimp-answer{display:block}
+.pimp-item.open .pimp-toggle{color:var(--teal)}
+
+/* TABLES */
+.ref-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.ref-table th{font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.ref-table td{padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+.ref-table tr:last-child td{border-bottom:none}
+.ref-table tr:hover td{background:var(--bg3)}
+
+/* ALERTS */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:10px;font-size:12px;line-height:1.5}
+.alert-red{background:var(--red-dim);border:1px solid rgba(255,71,87,.25)}
+.alert-gold{background:var(--gold-dim);border:1px solid rgba(255,192,72,.25)}
+.alert-teal{background:var(--teal-dim);border:1px solid rgba(0,201,177,.25)}
+
+/* NPO */
+.npo-row{display:flex;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);gap:12px}
+.npo-row:last-child{border-bottom:none}
+.npo-time{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--teal);min-width:52px}
+
+/* LEMON */
+.lemon-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lemon-row:last-child{border-bottom:none}
+.lemon-letter{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);min-width:28px}
+.lemon-label{font-size:13px;font-weight:600}
+.lemon-detail{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+/* MED ROWS */
+.med-row{padding:9px 0;border-bottom:1px solid var(--border)}
+.med-row:last-child{border-bottom:none}
+.med-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.med-action{display:inline-block;font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;margin-right:6px}
+.action-cont{background:var(--green-dim);color:var(--green)}
+.action-hold{background:var(--red-dim);color:var(--red)}
+.action-reduce{background:var(--gold-dim);color:var(--gold)}
+.action-case{background:var(--blue-dim);color:var(--blue)}
+.action-spec{background:var(--purple-dim);color:var(--purple)}
+.med-implication{font-size:11px;color:var(--text-dim);margin-top:3px}
+
+/* MALLAMPATI */
+.mp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.mp-card{background:var(--bg3);border-radius:8px;padding:10px;border-left:3px solid var(--text-dimmer)}
+.mp-card.mp-1{border-color:var(--green)}
+.mp-card.mp-2{border-color:var(--teal)}
+.mp-card.mp-3{border-color:var(--gold)}
+.mp-card.mp-4{border-color:var(--red)}
+.mp-class{font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:4px}
+.mp-desc{font-size:11px;color:var(--text-dim)}
+
+/* ASA */
+.asa-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.asa-row:last-child{border-bottom:none}
+.asa-class{font-family:var(--mono);font-size:13px;font-weight:700;min-width:56px}
+
+/* HARD STOP */
+.hardstop-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.hardstop-item:last-child{border-bottom:none}
+.hardstop-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:4px}
+
+/* CONDITION SELECTOR */
+.cond-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.cond-row:last-child{border-bottom:none}
+.cond-check{width:18px;height:18px;border:2px solid var(--text-dimmer);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
+.cond-check.checked{background:var(--teal);border-color:var(--teal)}
+.cond-check.checked::after{content:'✓';color:#000;font-size:11px;font-weight:700}
+.cond-name{font-size:13px;font-weight:500}
+.cond-impl{font-size:11px;color:var(--text-dim);margin-top:2px;line-height:1.4}
+
+/* ACTIVE SUMMARY */
+.active-summary{background:var(--bg2);border:1px solid var(--teal-mid);border-radius:10px;padding:12px;margin-bottom:14px}
+.active-summary-title{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.active-count{background:var(--teal);color:#000;font-family:var(--mono);font-size:10px;font-weight:700;border-radius:99px;padding:1px 7px}
+.active-list{font-size:12px;color:var(--text-dim);line-height:1.7}
+
+/* PATIENT SUMMARY */
+.summary-section{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
+.summary-section-title{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:10px}
+.summary-empty{font-size:12px;color:var(--text-dimmer);font-style:italic}
+.summary-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.summary-item:last-child{border-bottom:none}
+.summary-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px}
+.summary-dot-red{background:var(--red)}
+.summary-counts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.count-card{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
+.count-val{font-family:var(--mono);font-size:22px;color:var(--teal)}
+.count-label{font-size:10px;color:var(--text-dimmer);margin-top:2px}
+
+/* RESET BTN */
+.reset-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:var(--cond);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:all .2s;width:100%;margin-top:12px}
+.reset-btn:hover{background:var(--bg4);color:var(--text)}
+
+/* FLUID BOX */
+.fluid-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
+.fluid-title{font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:8px}
+.fluid-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.fluid-row:last-child{border-bottom:none}
+.fluid-val{font-family:var(--mono);color:var(--teal)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-logo">⚕ CRNA <span>Clinical Ref</span></div>
+    <div class="header-badge">Fabius GS</div>
+  </div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showModule('machine',this)">Module 1</button>
+    <button class="nav-tab" onclick="showModule('preop',this)">Module 2</button>
+    <button class="nav-tab" onclick="showModule('quickref',this)">Quick Ref</button>
+    <button class="nav-tab" onclick="showModule('medhx',this)">Med Hx</button>
+    <button class="nav-tab" onclick="showModule('sxhx',this)">Surg Hx</button>
+    <button class="nav-tab" onclick="showModule('allergies',this)">Allergies</button>
+    <button class="nav-tab" onclick="showModule('summary',this)">Pt Summary</button>
+  </nav>
+</header>
+
+<main class="content">
+
+<!-- ══════════════════ MODULE 1 – MACHINE SETUP ══════════════════ -->
+<div class="module active" id="module-machine">
+  <div class="module-hero">
+    <div class="module-hero-title">Module 1 — Machine Setup &amp; Check</div>
+    <div class="module-hero-sub">Dräger Fabius GS · MS MAIDS · ASA 15-Point · Between-Case</div>
+    <div class="progress-bar"><div class="progress-fill" id="machine-prog" style="width:0%"></div></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-dimmer)" id="machine-prog-label">0 / 51 complete</div>
+  </div>
+
+  <div class="card open" id="card-msmaids">
+    <div class="card-header" onclick="toggleCard('card-msmaids')">
+      <div><div class="card-title">MS MAIDS Framework</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Pre-anesthesia setup — category by category</div></div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="msmaids-body"></div>
+  </div>
+
+  <div class="card" id="card-asa15">
+    <div class="card-header" onclick="toggleCard('card-asa15')">
+      <div><div class="card-title">ASA 15-Point Pre-Anesthesia Checklist</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Formal check — complete before every case</div></div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="asa15-body"></div>
+  </div>
+
+  <div class="card" id="card-between">
+    <div class="card-header" onclick="toggleCard('card-between')">
+      <div><div class="card-title">Between-Case Protocol</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Turnover steps before next patient</div></div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="between-body"></div>
+  </div>
+
+  <div class="card open" id="card-machine-pimp">
+    <div class="card-header" onclick="toggleCard('card-machine-pimp')">
+      <div><div class="card-title">⚡ Pimp Q&amp;A — Machine Setup</div></div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="machine-pimp-body"></div>
+  </div>
+
+  <button class="reset-btn" onclick="resetMachine()">↺ Reset all checklists</button>
+</div>
+
+<!-- ══════════════════ MODULE 2 – PRE-OP ══════════════════ -->
+<div class="module" id="module-preop">
+  <div class="module-hero">
+    <div class="module-hero-title">Module 2 — Pre-Operative Assessment</div>
+    <div class="module-hero-sub">LEMON · STOP-BANG · NPO · Meds · Labs · Anesthesia Plan</div>
+  </div>
+
+  <div class="card open" id="card-npo">
+    <div class="card-header" onclick="toggleCard('card-npo')">
+      <div><div class="card-title">NPO Fasting Guidelines</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="npo-row"><div class="npo-time">2 hr</div><div>Clear liquids — water, juice, black coffee, clear tea</div></div>
+      <div class="npo-row"><div class="npo-time">4 hr</div><div>Breast milk</div></div>
+      <div class="npo-row"><div class="npo-time">6 hr</div><div>Infant formula / non-human milk</div></div>
+      <div class="npo-row"><div class="npo-time">6 hr</div><div>Light meal — toast, crackers, fruit</div></div>
+      <div class="npo-row"><div class="npo-time">8+ hr</div><div>Heavy meal — fried, fatty, meat</div></div>
+      <div class="npo-row" style="border-bottom:none"><div class="npo-time" style="color:var(--red)">1 WK</div><div><div>GLP-1 agonists (Ozempic, Wegovy, Mounjaro)</div><div style="font-size:11px;color:var(--red);margin-top:2px">⚠ Delayed gastric emptying — treat as full stomach if not held</div></div></div>
+      <div class="alert alert-gold" style="margin-top:10px"><span>💬</span><span>Chewing gum = treat as NPO violation — stimulates gastric acid</span></div>
+    </div>
+  </div>
+
+  <div class="card open" id="card-lemon">
+    <div class="card-header" onclick="toggleCard('card-lemon')">
+      <div><div class="card-title">LEMON Airway Evaluation</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="lemon-row"><div class="lemon-letter">L</div><div><div class="lemon-label">Look Externally</div><div class="lemon-detail">Beard, receding chin, macroglossia, facial trauma, short/thick neck, radiation changes</div></div></div>
+      <div class="lemon-row"><div class="lemon-letter">E</div><div><div class="lemon-label">Evaluate 3-3-2 Rule</div><div class="lemon-detail">Mouth opening ≥3 fingers · Chin to hyoid ≥3 fingers · Hyoid to thyroid notch ≥2 fingers</div></div></div>
+      <div class="lemon-row"><div class="lemon-letter">M</div><div><div class="lemon-label">Mallampati Class</div><div class="lemon-detail">Open mouth + protrude tongue. Class I–II = favorable. Class III–IV = video laryngoscope as primary</div></div></div>
+      <div class="lemon-row"><div class="lemon-letter">O</div><div><div class="lemon-label">Obstruction</div><div class="lemon-detail">Tumor, abscess, epiglottitis, goiter, angioedema, tracheal deviation, hematoma</div></div></div>
+      <div class="lemon-row" style="border-bottom:none"><div class="lemon-letter">N</div><div><div class="lemon-label">Neck Mobility</div><div class="lemon-detail">Flex/extension ROM · C-spine disease · RA · Halo/collar · Ankylosing spondylitis</div></div></div>
+      <div class="alert alert-red" style="margin-top:10px"><span>🔴</span><span>MP III–IV → VL primary. Multiple predictors → awake FOI. Document Plan A→B→C→D before induction.</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="card-stopbang">
+    <div class="card-header" onclick="toggleCard('card-stopbang')">
+      <div><div class="card-title">STOP-BANG — OSA Screening</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div id="stopbang-body"></div>
+      <div style="font-family:var(--mono);font-size:18px;color:var(--teal);text-align:center;margin:10px 0">Score: <span id="sb-score">0</span> / 8</div>
+      <div class="fluid-box">
+        <div class="fluid-title">Interpretation</div>
+        <div class="fluid-row"><span>0–2</span><span class="fluid-val" style="color:var(--green)">Low Risk</span></div>
+        <div class="fluid-row"><span>3–4</span><span class="fluid-val" style="color:var(--gold)">Intermediate Risk</span></div>
+        <div class="fluid-row" style="border-bottom:none"><span>5–8</span><span class="fluid-val" style="color:var(--red)">High Risk → ↓ opioids, CPAP PACU</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="card-meds">
+    <div class="card-header" onclick="toggleCard('card-meds')">
+      <div><div class="card-title">Perioperative Medication Management</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="meds-body"></div>
+  </div>
+
+  <div class="card" id="card-substance">
+    <div class="card-header" onclick="toggleCard('card-substance')">
+      <div><div class="card-title">Substance Use &amp; Hard Stops</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="substance-body"></div>
+  </div>
+
+  <div class="card" id="card-labs">
+    <div class="card-header" onclick="toggleCard('card-labs')">
+      <div><div class="card-title">Critical Lab Thresholds</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table"><thead><tr><th>Lab</th><th>Normal</th><th>Action Threshold</th></tr></thead><tbody id="labs-body"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card open" id="card-preop-pimp">
+    <div class="card-header" onclick="toggleCard('card-preop-pimp')">
+      <div><div class="card-title">⚡ Pimp Q&amp;A — Pre-op</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="preop-pimp-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ QUICK REFERENCE ══════════════════ -->
+<div class="module" id="module-quickref">
+  <div class="module-hero">
+    <div class="module-hero-title">Quick Reference</div>
+    <div class="module-hero-sub">NPO · Mallampati · ASA Classification · Hard Stops · Thresholds</div>
+  </div>
+
+  <div class="card open" id="card-qr-npo">
+    <div class="card-header" onclick="toggleCard('card-qr-npo')">
+      <div><div class="card-title">NPO Fasting — At a Glance</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table"><thead><tr><th>Material</th><th>Min Fast</th></tr></thead>
+      <tbody>
+        <tr><td>Clear liquids</td><td style="font-family:var(--mono);color:var(--teal)">2 hr</td></tr>
+        <tr><td>Breast milk</td><td style="font-family:var(--mono);color:var(--teal)">4 hr</td></tr>
+        <tr><td>Formula / non-human milk</td><td style="font-family:var(--mono);color:var(--teal)">6 hr</td></tr>
+        <tr><td>Light meal (toast, crackers)</td><td style="font-family:var(--mono);color:var(--teal)">6 hr</td></tr>
+        <tr><td>Heavy meal (fried, fatty, meat)</td><td style="font-family:var(--mono);color:var(--teal)">8+ hr</td></tr>
+        <tr><td>GLP-1 agonists (Ozempic etc.)</td><td style="font-family:var(--mono);color:var(--red)">1 WEEK</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card open" id="card-qr-mp">
+    <div class="card-header" onclick="toggleCard('card-qr-mp')">
+      <div><div class="card-title">Mallampati Classification</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="mp-grid">
+        <div class="mp-card mp-1"><div class="mp-class" style="color:var(--green)">Class I ✓</div><div class="mp-desc">Soft palate, uvula, fauces, pillars fully visible</div></div>
+        <div class="mp-card mp-2"><div class="mp-class" style="color:var(--teal)">Class II ✓</div><div class="mp-desc">Soft palate, uvula, fauces visible</div></div>
+        <div class="mp-card mp-3"><div class="mp-class" style="color:var(--gold)">Class III ⚠</div><div class="mp-desc">Only base of uvula visible — anticipate difficulty</div></div>
+        <div class="mp-card mp-4"><div class="mp-class" style="color:var(--red)">Class IV 🔴</div><div class="mp-desc">Soft palate NOT visible — difficult airway plan required</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" id="card-qr-asa">
+    <div class="card-header" onclick="toggleCard('card-qr-asa')">
+      <div><div class="card-title">ASA Physical Status Classification</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="asa-row"><div class="asa-class" style="color:var(--green)">ASA I</div><div style="font-size:12px">Healthy patient, no systemic disease</div></div>
+      <div class="asa-row"><div class="asa-class" style="color:var(--teal)">ASA II</div><div style="font-size:12px">Mild systemic disease — controlled HTN, mild asthma, BMI 30–40, social smoker</div></div>
+      <div class="asa-row"><div class="asa-class" style="color:var(--gold)">ASA III</div><div style="font-size:12px">Severe systemic disease — COPD, poorly controlled DM, morbid obesity, CAD, MI &gt;3mo</div></div>
+      <div class="asa-row"><div class="asa-class" style="color:var(--red)">ASA IV</div><div style="font-size:12px">Severe disease = constant threat to life — decompensated CHF, MI &lt;3mo, ESRD</div></div>
+      <div class="asa-row"><div class="asa-class" style="color:var(--red)">ASA V</div><div style="font-size:12px">Moribund — not expected to survive without surgery (ruptured AAA, massive PE)</div></div>
+      <div class="asa-row"><div class="asa-class" style="color:var(--purple)">ASA VI</div><div style="font-size:12px">Brain-dead organ donor</div></div>
+      <div class="asa-row" style="border-bottom:none"><div class="asa-class" style="color:var(--blue)">+E</div><div style="font-size:12px">Emergency modifier — delay = threat to life/limb/organ. MD sign-off required.</div></div>
+    </div>
+  </div>
+
+  <div class="card open" id="card-qr-hardstop">
+    <div class="card-header" onclick="toggleCard('card-qr-hardstop')">
+      <div><div class="card-title">🔴 Hard Stop Criteria — Delay Surgery</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="hardstop-body"></div>
+  </div>
+
+  <div class="card open" id="card-qr-thresh">
+    <div class="card-header" onclick="toggleCard('card-qr-thresh')">
+      <div><div class="card-title">Critical Thresholds — At a Glance</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table"><thead><tr><th>Parameter</th><th>Threshold</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>K+</td><td style="font-family:var(--mono);color:var(--red)">&gt;5.5 mEq/L</td><td>Avoid succinylcholine</td></tr>
+        <tr><td>Platelets</td><td style="font-family:var(--mono);color:var(--red)">&lt;80k/μL</td><td>Neuraxial caution; &lt;50k = contraindicated</td></tr>
+        <tr><td>INR</td><td style="font-family:var(--mono);color:var(--gold)">&gt;1.5</td><td>Coagulopathy — neuraxial concern</td></tr>
+        <tr><td>Hgb</td><td style="font-family:var(--mono);color:var(--gold)">&lt;7 g/dL</td><td>Transfusion threshold (case-dependent)</td></tr>
+        <tr><td>Glucose</td><td style="font-family:var(--mono);color:var(--gold)">&lt;70 mg/dL</td><td>Treat before proceeding</td></tr>
+        <tr><td>Glucose intraop</td><td style="font-family:var(--mono);color:var(--teal)">140–180</td><td>Target range under GA</td></tr>
+        <tr><td>O₂ tank PSI</td><td style="font-family:var(--mono);color:var(--red)">&lt;500 PSI</td><td>Change cylinder; full = 2000 PSI</td></tr>
+        <tr><td>Circuit leak</td><td style="font-family:var(--mono);color:var(--green)">&lt;300 mL/min</td><td>At 30 cmH₂O — pass criteria</td></tr>
+        <tr><td>Suction</td><td style="font-family:var(--mono);color:var(--green)">≥300 mmHg</td><td>Minimum negative pressure</td></tr>
+        <tr><td>Min O₂ flow</td><td style="font-family:var(--mono);color:var(--teal)">200 mL/min</td><td>Never run pure N₂O</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="card" id="card-qr-succs">
+    <div class="card-header" onclick="toggleCard('card-qr-succs')">
+      <div><div class="card-title">Succinylcholine — Absolute Contraindications</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="succs-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ COPY OF MEDICAL HISTORY ══════════════════ -->
+<div class="module" id="module-medhx">
+  <div class="module-hero">
+    <div class="module-hero-title">Copy of Medical History</div>
+    <div class="module-hero-sub">Select active conditions — anesthesia implications auto-displayed</div>
+  </div>
+  <div class="active-summary">
+    <div class="active-summary-title">Active Conditions <span class="active-count" id="medhx-count">0</span></div>
+    <div class="active-list" id="medhx-active"></div>
+  </div>
+  <div id="medhx-body"></div>
+</div>
+
+<!-- ══════════════════ COPY OF SURGICAL HISTORY ══════════════════ -->
+<div class="module" id="module-sxhx">
+  <div class="module-hero">
+    <div class="module-hero-title">Copy of Surgical History</div>
+    <div class="module-hero-sub">Select prior procedures · Flag anesthesia complications</div>
+  </div>
+  <div class="active-summary">
+    <div class="active-summary-title">Prior Procedures <span class="active-count" id="sxhx-count">0</span></div>
+    <div class="active-list" id="sxhx-active"></div>
+  </div>
+
+  <div class="card open" id="card-special-flags">
+    <div class="card-header" onclick="toggleCard('card-special-flags')">
+      <div><div class="card-title" style="color:var(--red)">⚠ Special Anesthesia Flags</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="special-flags-body"></div>
+  </div>
+
+  <div id="sxhx-body"></div>
+</div>
+
+<!-- ══════════════════ COPY OF ALLERGIES ══════════════════ -->
+<div class="module" id="module-allergies">
+  <div class="module-hero">
+    <div class="module-hero-title">Copy of Allergies</div>
+    <div class="module-hero-sub">Select known allergies — anesthesia alternatives auto-displayed</div>
+  </div>
+  <div class="active-summary" style="border-color:rgba(255,71,87,.3)">
+    <div class="active-summary-title" style="color:var(--red)">Active Allergies <span class="active-count" id="allergy-count" style="background:var(--red)">0</span></div>
+    <div class="active-list" id="allergy-active"></div>
+  </div>
+  <div id="allergy-body"></div>
+</div>
+
+<!-- ══════════════════ COPY OF PATIENT SUMMARY 1 ══════════════════ -->
+<div class="module" id="module-summary">
+  <div class="module-hero">
+    <div class="module-hero-title">Copy of Patient Summary 1</div>
+    <div class="module-hero-sub">Auto-populated from Medical History, Surgical History &amp; Allergies</div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-section-title">Active Medical Conditions</div>
+    <div id="summary-medhx-list"><div class="summary-empty">No conditions selected in Medical History tab</div></div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-section-title">Prior Surgical History</div>
+    <div id="summary-sxhx-list"><div class="summary-empty">No procedures selected in Surgical History tab</div></div>
+  </div>
+
+  <div class="summary-section">
+    <div class="summary-section-title" style="color:var(--red)">Active Allergies</div>
+    <div id="summary-allergy-list"><div class="summary-empty">No allergies selected in Allergies tab</div></div>
+  </div>
+
+  <div class="summary-counts">
+    <div class="count-card"><div class="count-val" id="summary-cond-count">0</div><div class="count-label">Active Conditions</div></div>
+    <div class="count-card"><div class="count-val" id="summary-sx-count">0</div><div class="count-label">Prior Procedures</div></div>
+    <div class="count-card"><div class="count-val" id="summary-allergy-count" style="color:var(--red)">0</div><div class="count-label">Active Allergies</div></div>
+    <div class="count-card"><div class="count-val" id="summary-flag-count" style="color:var(--red)">0</div><div class="count-label">Special Flags</div></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ════════════ DATA ════════════
+
+const MSMAIDS = [
+  {cat:'M',label:'Anesthesia machine power on',normal:'Powered, display active'},
+  {cat:'M',label:'Flow meters (O₂, Air, N₂O) function',normal:'All float freely, no leak'},
+  {cat:'M',label:'Vaporizer filled, locked, not tilted',normal:'Adequate agent level'},
+  {cat:'M',label:'O₂ flush valve functional',normal:'Flow increases with flush'},
+  {cat:'S',label:'Suction tubing connected & functional',normal:'≥300 mmHg negative pressure'},
+  {cat:'S',label:'Yankauer & suction catheter present',normal:'Within reach'},
+  {cat:'A',label:'Face mask, oral/nasal airways in place',normal:'Multiple sizes available'},
+  {cat:'A',label:'LMA checked & available (backup)',normal:'Cuff checked, lubed'},
+  {cat:'A',label:'ETT verified — cuff check + stylet',normal:'Cuff holds, stylet curved'},
+  {cat:'A',label:'Video laryngoscope available & charged',normal:'Blade clean, camera works'},
+  {cat:'A',label:'Difficult airway cart accessible',normal:'Cart present in room'},
+  {cat:'I',label:'IV access confirmed patent',normal:'Flushes without resistance'},
+  {cat:'I',label:'IV fluids & tubing primed',normal:'No air in line'},
+  {cat:'I',label:'Infusion pumps programmed if needed',normal:'Rates confirmed'},
+  {cat:'D',label:'Induction agents drawn & labeled',normal:'Propofol / Etomidate ready'},
+  {cat:'D',label:'Paralytics drawn & labeled',normal:'Succinylcholine / Roc ready'},
+  {cat:'D',label:'Reversal agents available',normal:'Neostigmine / Sugammadex'},
+  {cat:'D',label:'Emergency drugs immediately available',normal:'Epi, Atropine, Vasopressors'},
+  {cat:'D',label:'Volatile agent in vaporizer confirmed',normal:'Agent ID matches vaporizer label'},
+  {cat:'S2',label:'SpO₂ probe on patient & reading',normal:'Good waveform'},
+  {cat:'S2',label:'EKG leads connected, rhythm visible',normal:'Lead II at minimum'},
+  {cat:'S2',label:'ETCO₂ sampling line connected',normal:'Ready for waveform post-intubation'},
+  {cat:'S2',label:'BP cuff sized and functional',normal:'First reading obtained'},
+  {cat:'S2',label:'Temperature probe in place (if applicable)',normal:'Esophageal or skin probe'},
+];
+
+const ASA15 = [
+  'Final patient / procedure ID verification — confirm with patient',
+  'Machine power & all displays active',
+  'High-pressure O₂ source checked (≥1000 PSI wall / full cylinder)',
+  'Low-pressure O₂ leak test passed — no leaks detected',
+  'Flow meters functional — O₂, Air, N₂O all smooth',
+  'Vaporizer filled, sealed, not tipped — adequate level',
+  'Breathing circuit leak test passed — <300 mL/min at 30 cmH₂O',
+  'APL valve functional in manual AND auto mode',
+  'CO₂ absorber color fresh — purple = exhausted, DO NOT USE',
+  'Ventilator: tidal volume & rate confirmed — TV 6–8 mL/kg IBW',
+  'Suction functional — ≥300 mmHg; Yankauer & suction present',
+  'Airway equipment: masks, ETTs, LMA, video laryngoscope, FOB',
+  'Monitors: SpO₂, EKG, ETCO₂, BP — all reading baseline',
+  'IV access patent, fluids connected, no air in line',
+  'Emergency drugs available & labeled — Epi, Atropine, Vasopressors',
+];
+
+const BETWEEN = [
+  'Dispose of sharps & contaminated items per protocol',
+  'Remove and dispose of ETT, LMA, breathing circuit',
+  'Wipe down machine with approved disinfectant',
+  'Restock drugs: induction agents, paralytics, analgesics',
+  'Restock airway equipment (ETTs, LMA, oral airways, masks)',
+  'Prime new IV tubing if needed',
+  'Reset ventilator settings to defaults',
+  'Replace CO₂ absorber if color indicates exhaustion',
+  'Reset monitoring leads & probes',
+  'Update medication log & document case',
+  'Confirm next patient ID, procedure & special needs',
+  'Complete circuit leak test for next case',
+];
+
+const MACHINE_PIMP = [
+  {q:'What pressure indicates O₂ cylinder is full?',a:'2000 PSI = full. Below 500 PSI → change cylinder. Wall supply should read ≥50 PSI. Always have a backup cylinder available.'},
+  {q:'What is the significance of a failed circuit leak test?',a:'Indicates leak in the breathing system — patient may receive sub-therapeutic gas concentrations and/or desaturate. Find the leak source (connections, ETT cuff, vaporizer filler cap) before proceeding. Never start a case with a failed leak test.'},
+  {q:'Why check CO₂ absorber color?',a:'Purple/violet = exhausted — DO NOT USE. White/clear = fresh. Spent absorber allows CO₂ rebreathing → hypercarbia → respiratory acidosis → cardiovascular compromise. Replace before the case.'},
+  {q:'What is the APL valve and when do you use manual vs auto?',a:'Adjustable Pressure Limiting valve controls maximum circuit pressure. Manual mode (bag ventilation): set 20–30 cmH₂O. Auto/vent mode: ventilator takes over — APL should be fully open or bypassed. Failure to switch modes = inability to ventilate properly.'},
+  {q:'What is the minimum O₂ flow rate on most machines?',a:'200 mL/min O₂ is the minimum safe flow. Most machines have a hypoxic guard preventing O₂ concentration below 21–25%. Never run pure N₂O — the O₂/N₂O interlock prevents this on modern machines.'},
+  {q:'Walk me through the order of your pre-anesthesia check.',a:'MS MAIDS: Machine (power, flows, vaporizer, flush) → Suction (function, Yankauer) → Airway (masks, ETT, LMA, VL, FOB, cart) → IV (access, fluids, pumps) → Drugs (induction, paralytics, reversal, emergency) → Monitors (SpO₂, EKG, ETCO₂, BP, temp). Then complete the formal ASA 15-point checklist.'},
+];
+
+const STOPBANG = [
+  {l:'S',q:'Snore',d:'Do you snore loudly (louder than talking or heard through closed doors)?'},
+  {l:'T',q:'Tired',d:'Do you often feel tired, fatigued, or sleepy during the daytime?'},
+  {l:'O',q:'Observed',d:'Has anyone observed you stop breathing or choking/gasping during sleep?'},
+  {l:'P',q:'Pressure',d:'Do you have or are you being treated for high blood pressure?'},
+  {l:'B',q:'BMI',d:'BMI >35 kg/m²?'},
+  {l:'A',q:'Age',d:'Age over 50 years old?'},
+  {l:'N',q:'Neck',d:'Neck circumference >40 cm (>16 inches)?'},
+  {l:'G',q:'Gender',d:'Gender = Male?'},
+];
+
+const MEDS = [
+  {name:'Beta-blockers (metoprolol, atenolol)',action:'cont',label:'CONTINUE',impl:'Abrupt discontinuation → rebound HTN, tachycardia, myocardial ischemia. Continue perioperatively.'},
+  {name:'ACE-I / ARBs (lisinopril, losartan)',action:'hold',label:'HOLD day-of',impl:'Block RAAS → refractory hypotension on induction unresponsive to typical vasopressors. Hold morning of surgery.'},
+  {name:'Diuretics (furosemide, HCTZ)',action:'hold',label:'HOLD/discuss',impl:'Volume depletion and electrolyte imbalances (K+, Na+, Mg2+). Assess fluid status pre-op.'},
+  {name:'Metformin',action:'hold',label:'HOLD day-of',impl:'Risk of lactic acidosis with contrast, hypotension, or low renal flow states. Hold morning of surgery.'},
+  {name:'Insulin',action:'reduce',label:'REDUCE',impl:'Hypoglycemia under general anesthesia is dangerous and undetected. Hold or reduce — check glucose q1hr intraop.'},
+  {name:'GLP-1 agonists (Ozempic, Wegovy)',action:'hold',label:'HOLD 1 WEEK',impl:'Significantly delay gastric emptying → full stomach risk even with adequate fasting. May require RSI.'},
+  {name:'Warfarin / DOACs',action:'case',label:'CASE-SPECIFIC',impl:'Bridge therapy vs hold depending on indication. Check INR. Neuraxial threshold INR <1.5.'},
+  {name:'Clopidogrel (Plavix)',action:'case',label:'CASE-SPECIFIC',impl:'Hold 5–7 days unless bare metal stent <30d or DES <12mo (do NOT hold). Cardiology input.'},
+  {name:'Chronic opioids',action:'cont',label:'CONTINUE',impl:'Prevent withdrawal. Expect ↑ opioid requirements intraop. Multimodal analgesia essential.'},
+  {name:'Levodopa (Parkinson\'s)',action:'cont',label:'CONTINUE',impl:'Missing a dose → rigidity, swallowing dysfunction. Continue through perioperative period.'},
+  {name:'AEDs (seizure medications)',action:'cont',label:'CONTINUE',impl:'Missed dose → perioperative seizure. Continue perioperatively.'},
+  {name:'SSRIs / SNRIs',action:'cont',label:'CONTINUE',impl:'Continue perioperatively. Watch for serotonin interactions with meperidine, tramadol, methylene blue.'},
+  {name:'MAOIs',action:'spec',label:'⚠ SPECIALIST',impl:'Hypertensive crisis with sympathomimetics. Serotonin syndrome with meperidine. Specialist input required.'},
+  {name:'Herbal supplements',action:'hold',label:'HOLD 2 weeks',impl:'Garlic/ginkgo → bleeding. Kava/valerian → sedation. St. John\'s Wort → serotonin interactions.'},
+];
+
+const SUBSTANCE = [
+  {s:'Nicotine (cigarettes, vaping)',t:'Best ≥4–8 weeks; hold day-of at minimum',flag:false,n:'↑ airway reactivity, mucus production.'},
+  {s:'Alcohol',t:'Hold ≥24–48h; HARD STOP if intoxicated',flag:true,n:'Acute intoxication = hard stop. Chronic use → ↑ anesthetic requirements, hepatic effects, AWS risk.'},
+  {s:'Marijuana / THC',t:'≥24 hr (heavy chronic users: longer)',flag:false,n:'Acute intoxication → cardiovascular effects.'},
+  {s:'Cocaine',t:'≥24–72 hr — HARD STOP if used today',flag:true,n:'Arrhythmia, hypertensive crisis, MI risk even hours after use. Never proceed same day.'},
+  {s:'Methamphetamine',t:'≥24–48 hr (often longer)',flag:true,n:'Catecholamine depletion after chronic use → severe hypotension intraop. Acute use → HTN, arrhythmia.'},
+  {s:'Chronic opioids',t:'CONTINUE baseline — do not stop',flag:false,n:'Abrupt withdrawal causes hemodynamic instability. Continue and adjust intraop dosing.'},
+];
+
+const LABS = [
+  ['Hgb','12–17 g/dL','< 7 → transfusion threshold (case-dependent)'],
+  ['Hct','36–50%','Correlates with Hgb'],
+  ['Platelets','150–400 k/μL','< 80k → neuraxial caution; < 50k → contraindicated'],
+  ['WBC','4.5–11 k/μL','Elevated → active infection'],
+  ['Na+','135–145 mEq/L','Severe dysnatremia → CNS risk'],
+  ['K+','3.5–5.0 mEq/L','> 5.5 → avoid succinylcholine'],
+  ['Creatinine','0.6–1.2 mg/dL','Elevated → adjust renally cleared drugs'],
+  ['Glucose','70–100 mg/dL','< 70 → treat before surgery; > 180 → optimize'],
+  ['INR','0.8–1.2','> 1.5 → coagulopathy; neuraxial concern'],
+  ['aPTT','25–35 sec','Elevated → heparin effect or factor deficiency'],
+  ['HCG','Negative','Positive → surgery implications; must address'],
+];
+
+const PREOP_PIMP = [
+  {q:'Why hold ACE-I/ARBs on the day of surgery?',a:'Block RAAS → refractory hypotension on induction that does not respond to typical vasopressors (phenylephrine, ephedrine). Especially dangerous with neuraxial anesthesia or hypovolemia. Vasopressin may be required.'},
+  {q:'What are hard stop criteria for substance use?',a:'Acute intoxication (any substance), unstable vitals (tachycardia, HTN, AMS), active withdrawal symptoms, cocaine use today (arrhythmia, hypertensive crisis, MI risk even hours later).'},
+  {q:'Mallampati III — what does it mean and what\'s your plan?',a:'Only the base of uvula visible = anticipated difficult direct laryngoscopy. Plan: Video laryngoscope as primary. Have SGA + fiberoptic ready. Second provider available. Multiple predictors → consider awake FOI. Document Plan A→B→C→D.'},
+  {q:'GLP-1 agonist patient — how does this change your assessment?',a:'GLP-1 agonists significantly delay gastric emptying. Even with adequate fasting, substantial gastric residual may remain. Hold weekly GLP-1 for 1 week before elective surgery. Consider RSI or point-of-care gastric ultrasound.'},
+  {q:'When is succinylcholine absolutely contraindicated?',a:'K+ >5.5 · Burns >48h post-injury · Crush injury/rhabdomyolysis · Denervation injuries (UMN/LMN) · Prolonged immobility >3 days · Personal/family history of MH · Pseudocholinesterase deficiency · Myopathies (Duchenne, myotonic dystrophy). Alternative: rocuronium 1.2 mg/kg + sugammadex reversal.'},
+  {q:'STOP-BANG score of 6 — how does this change your plan?',a:'High risk OSA. ↓ opioids → multimodal (NSAIDs, acetaminophen, dexamethasone, regional). Anticipate difficult mask ventilation. CPAP in PACU. Semi-upright positioning. Consider overnight admission. Continue home CPAP through perioperative period.'},
+  {q:'Platelet count threshold for neuraxial anesthesia?',a:'80,000–100,000/μL generally required. Below 50k = absolute contraindication. Consider: trend (falling more concerning), etiology, concurrent anticoagulants, urgency. Risk-benefit discussion with attending.'},
+];
+
+const HARD_STOPS = [
+  'Acute intoxication — any substance (alcohol, cocaine, opioids, methamphetamine)',
+  'Active withdrawal symptoms — cardiovascular instability',
+  'Cocaine use today → arrhythmia, hypertensive crisis, MI risk',
+  'Unstable vitals — unexplained tachycardia, HTN, or altered mental status',
+  'Uncontrolled coagulopathy with planned neuraxial technique',
+  'Platelet < 50k with planned neuraxial anesthesia',
+  'MH family history without confirmed TIVA plan',
+  'Active respiratory infection with fever or hypoxia',
+  'Glucose < 70 mg/dL — treat before proceeding',
+  'Decompensated CHF or active MI — cardiology stabilization required first',
+];
+
+const SUCCS_CI = [
+  'K+ >5.5 mEq/L — hyperkalemia → cardiac arrest risk',
+  'Burns >48 hours post-injury — upregulated ACh receptors → massive K+ release',
+  'Crush injury / rhabdomyolysis — same mechanism',
+  'Denervation injuries — UMN or LMN lesions (CVA, spinal injury, Guillain-Barré)',
+  'Prolonged immobility >3 days — muscle denervation physiology',
+  'Personal history of Malignant Hyperthermia (MH)',
+  'Family history of MH — use TIVA + avoid all volatile agents',
+  'Pseudocholinesterase deficiency — prolonged paralysis (hours)',
+  'Myopathies — Duchenne, Becker, myotonic dystrophy → hyperkalemia + rhabdo',
+];
+
+const MED_HX = [
+  {sys:'CARDIAC',color:'var(--red)',conds:[
+    {n:'Hypertension (HTN)',i:'↑ stroke/MI risk; continue antihypertensives; labile BP intraop; arterial line consider'},
+    {n:'Coronary Artery Disease (CAD)',i:'Maintain O₂ supply/demand balance; avoid tachycardia; consider arterial line'},
+    {n:'MI — within 3 months',i:'Elective surgery: postpone if possible; hemodynamic stability critical; cardiology clearance'},
+    {n:'Congestive Heart Failure (CHF)',i:'Avoid fluid overload; etomidate for induction; invasive monitoring; euvolemia essential'},
+    {n:'Atrial Fibrillation (AFib)',i:'Rate control pre-op; anticoagulation status → bleeding risk; cardioversion risk intraop'},
+    {n:'Pacemaker / ICD / AICD',i:'Deactivate ICD pre-op; avoid monopolar cautery near device; have external pacer/defibrillator'},
+    {n:'Aortic Stenosis (AS)',i:'Maintain preload AND afterload; avoid vasodilation; sinus rhythm critical; slow HR preferred'},
+    {n:'Mitral Regurgitation (MR)',i:'Afterload reduction beneficial; avoid bradycardia; watch volume status; forward flow goal'},
+    {n:'Pulmonary Hypertension',i:'Avoid hypoxia/hypercapnia/acidosis; NO N₂O; PA catheter consider; prostacyclin analogs available'},
+  ]},
+  {sys:'PULMONARY',color:'var(--blue)',conds:[
+    {n:'Asthma',i:'Pretreat with bronchodilator; ketamine or volatile agents preferred; avoid histamine releasers (morphine, atracurium)'},
+    {n:'COPD / Emphysema',i:'Maintain PEEP to prevent gas trapping; avoid over-oxygenation in retainers; barrel chest → difficult ventilation'},
+    {n:'OSA (STOP-BANG ≥3)',i:'↓ opioids; CPAP postop; semi-upright; extended PACU monitoring; difficult mask ventilation possible'},
+    {n:'Pulmonary Fibrosis / ILD',i:'Low tidal volumes (6 mL/kg); ↑ PEEP may worsen; avoid high FiO₂; SpO₂ monitoring critical'},
+    {n:'Recent URI / Active Pneumonia',i:'↑ airway reactivity; bronchospasm risk; postpone elective surgery if active symptoms'},
+    {n:'Tracheostomy (in situ)',i:'Confirm size/type/cuff; immature tract = false passage risk if decannulated; have extra tube'},
+  ]},
+  {sys:'ENDOCRINE',color:'var(--gold)',conds:[
+    {n:'Diabetes — Type 1 (IDDM)',i:'Hold insulin (hypoglycemia under GA is dangerous & undetected); check glucose q1hr intraop'},
+    {n:'Diabetes — Type 2 (NIDDM)',i:'Hold metformin day-of; reduce insulin; target glucose 140–180 mg/dL intraop'},
+    {n:'Hypothyroidism',i:'↓ anesthetic requirements; ↓ cardiac output; delayed emergence; myxedema coma risk'},
+    {n:'Hyperthyroidism',i:'Thyroid storm risk intraop; avoid sympathomimetics; beta-blockade preop; avoid ketamine'},
+    {n:'Morbid Obesity (BMI >40)',i:'RSI consider; ramp position; ↑ PEEP 10+; atelectasis; IBW for drug dosing; bariatric equipment'},
+    {n:'Adrenal Insufficiency',i:'Stress-dose steroids perioperatively; AVOID etomidate (adrenal suppression for 24h)'},
+  ]},
+  {sys:'NEURO',color:'var(--purple)',conds:[
+    {n:'Seizure Disorder / Epilepsy',i:'CONTINUE AEDs perioperatively; avoid seizure threshold-lowering agents (tramadol, meperidine)'},
+    {n:'Prior CVA / Stroke',i:'Document baseline neuro exam; maintain cerebral perfusion pressure; avoid hypotension'},
+    {n:'Dementia / Cognitive Impairment',i:'↑ POCD risk; minimize anticholinergics/benzodiazepines; regional preferred if possible'},
+    {n:'Parkinson\'s Disease',i:'CONTINUE levodopa perioperatively — missing dose → rigidity; avoid dopamine antagonists (droperidol, metoclopramide)'},
+    {n:'Myasthenia Gravis',i:'Sensitive to non-depolarizing NMBAs — use 10–20% of normal dose; avoid succinylcholine if on AChE inhibitor'},
+    {n:'Increased ICP / Brain Tumor',i:'Avoid N₂O; maintain CPP (MAP − ICP); avoid coughing at emergence; dexamethasone; HV prn'},
+  ]},
+  {sys:'RENAL',color:'var(--teal)',conds:[
+    {n:'Chronic Kidney Disease (CKD)',i:'Adjust renally cleared drugs; avoid nephrotoxins (NSAIDs, aminoglycosides); K+ monitoring'},
+    {n:'ESRD on Dialysis',i:'Dialysis timing pre-op; volume status; K+ critically important; fistula arm protection'},
+    {n:'Acute Kidney Injury (AKI)',i:'Delay elective surgery if possible; maintain renal perfusion pressure; avoid nephrotoxins'},
+  ]},
+  {sys:'GI / HEPATIC',color:'var(--green)',conds:[
+    {n:'GERD / Hiatal Hernia',i:'Aspiration risk — consider RSI; sodium citrate + metoclopramide prophylaxis; head-up position'},
+    {n:'Cirrhosis / Hepatic Failure',i:'Coagulopathy; ↓ protein binding; ↓ drug metabolism; ↑ ascites/aspiration risk; avoid hepatotoxic agents'},
+    {n:'Active GI Bleed',i:'Full stomach protocol; hemodynamic instability; Type & Cross essential; RSI indicated'},
+  ]},
+  {sys:'HEMATOLOGY',color:'var(--blue)',conds:[
+    {n:'Anemia',i:'Optimize pre-op if elective; T&C if surgical blood loss expected; transfusion threshold plan (Hgb 7–8)'},
+    {n:'Coagulopathy / Bleeding Disorder',i:'Coag panel review; neuraxial contraindication assessment; hematology consult for major cases'},
+    {n:'HIT (Heparin-Induced Thrombocytopenia)',i:'ABSOLUTE contraindication to heparin including flushes. Use argatroban or bivalirudin. Alert entire team.'},
+    {n:'Sickle Cell Disease',i:'Avoid hypoxia/hypothermia/acidosis/dehydration — all precipitate crisis; high FiO₂; warming; hydration'},
+  ]},
+  {sys:'MSK',color:'var(--text-dim)',conds:[
+    {n:'Rheumatoid Arthritis (RA)',i:'C-spine involvement → difficult airway (atlantoaxial instability); TMJ limitation; consider awake fiberoptic'},
+    {n:'Ankylosing Spondylitis',i:'Extremely rigid C-spine; awake fiberoptic likely needed; neuraxial may be technically impossible'},
+    {n:'Scoliosis / Kyphosis',i:'Restrictive lung pattern; difficult ventilation; regional anesthesia may be technically difficult'},
+  ]},
+  {sys:'ONCOLOGY',color:'var(--purple)',conds:[
+    {n:'Prior Bleomycin therapy',i:'LIMIT FiO₂ to <30% — pulmonary fibrosis risk is O₂-dose dependent. Document and alert team.'},
+    {n:'Anthracyclines (doxorubicin)',i:'Cardiomyopathy risk — baseline echo; myocardial depression possible; invasive monitoring consider'},
+    {n:'Neck/airway radiation',i:'Tissue fibrosis → difficult airway; restricted mouth opening; fragile tissue; awake FOI likely'},
+  ]},
+  {sys:'PSYCH',color:'var(--text-dim)',conds:[
+    {n:'SSRI / SNRI use',i:'Continue perioperatively; watch serotonin interactions (meperidine, tramadol, methylene blue)'},
+    {n:'Alcohol Use Disorder',i:'AWS starts 6–24hr; ↑ anesthetic requirements; hepatic effects; CIWA monitoring; thiamine'},
+    {n:'Chronic Opioid Use',i:'Continue baseline; ↑ opioid requirements intraop; withdrawal prevention; multimodal analgesia plan'},
+  ]},
+];
+
+const SX_HX = [
+  {sys:'CARDIAC',conds:['CABG (coronary artery bypass graft)','Valve replacement / repair','Cardiac catheterization / stent placement','Pacemaker / ICD implant','Heart transplant']},
+  {sys:'THORACIC',conds:['Thoracotomy / thoracoscopy (VATS)','Lobectomy / pneumonectomy','Tracheostomy']},
+  {sys:'ABDOMINAL',conds:['Cholecystectomy (lap or open)','Appendectomy','Bowel resection / colectomy','Liver / hepatic surgery','Pancreatectomy / Whipple','Gastric bypass / bariatric surgery','Hernia repair','Exploratory laparotomy']},
+  {sys:'VASCULAR',conds:['AAA repair (open or EVAR)','Carotid endarterectomy (CEA)','Peripheral bypass / vascular surgery']},
+  {sys:'ORTHOPEDIC',conds:['Total hip arthroplasty (THA)','Total knee arthroplasty (TKA)','Spinal surgery (fusion / laminectomy)','Shoulder surgery','Fracture ORIF']},
+  {sys:'NEUROSURGERY',conds:['Craniotomy','Spinal cord surgery','VP shunt placement / revision']},
+  {sys:'HEAD & NECK',conds:['Thyroidectomy / parathyroidectomy','Tonsillectomy / adenoidectomy','Laryngoscopy / microlaryngoscopy','Radical neck dissection']},
+  {sys:'OB/GYN',conds:['Cesarean section','Hysterectomy (lap / open)','Tubal ligation']},
+  {sys:'UROLOGY',conds:['TURP / cystoscopy','Nephrectomy','Renal transplant']},
+];
+
+const SPECIAL_FLAGS = [
+  {n:'Malignant Hyperthermia — Personal History',a:'TIVA ONLY — propofol infusion. Avoid ALL volatile agents AND succinylcholine. Have dantrolene on site (2.5 mg/kg). Alert entire OR team.'},
+  {n:'Malignant Hyperthermia — Family History',a:'Same precautions as personal history. TIVA mandatory. Dantrolene immediately available.'},
+  {n:'Pseudocholinesterase Deficiency',a:'Avoid succinylcholine — prolonged paralysis (hours). Use rocuronium + sugammadex. Document for future procedures.'},
+  {n:'Documented Difficult Airway',a:'Review prior records. VL as primary. Awake FOI if multiple predictors. Have backup plan before induction.'},
+  {n:'Intraoperative Awareness (prior recall)',a:'BIS or depth of anesthesia monitoring. Discuss with patient pre-op. TIVA may reduce risk.'},
+  {n:'Severe PONV (prior)',a:'Multimodal prophylaxis: ondansetron + dexamethasone + scopolamine patch. TIVA over volatile agents. ↓ N₂O. Adequate hydration.'},
+];
+
+const ALLERGIES = [
+  {sys:'ANTIBIOTICS',items:[
+    {n:'Penicillin / Amoxicillin',a:'Anaphylaxis → vancomycin or clindamycin for prophylaxis. Rash only → cefazolin usually safe (~1% cross-react). Document reaction type carefully.'},
+    {n:'Cephalosporins (Cefazolin, Keflex)',a:'Avoid cephalosporins. Use vancomycin 15 mg/kg or clindamycin for prophylaxis.'},
+    {n:'Sulfonamides (Bactrim)',a:'Avoid sulfa-containing drugs. No reliable cross-react with loop diuretics (controversial).'},
+    {n:'Vancomycin',a:'Red man syndrome = NOT a true allergy — slow infusion rate, premedicate with diphenhydramine. True allergy: use daptomycin.'},
+  ]},
+  {sys:'ANALGESICS / NSAIDs',items:[
+    {n:'Aspirin / NSAIDs (AERD)',a:'Avoid ALL NSAIDs including ketorolac — can trigger bronchospasm. Use acetaminophen + multimodal alternatives.'},
+    {n:'Morphine',a:'True opioid allergy is rare. Morphine causes histamine release (not true allergy) → use fentanyl or hydromorphone instead.'},
+    {n:'Meperidine (Demerol)',a:'Avoid with MAOIs → serotonin syndrome. Avoid in renal failure → normeperidine accumulation → seizures.'},
+    {n:'Codeine',a:'CYP2D6 ultra-rapid metabolizers → excess morphine → respiratory depression. Use opioids not relying on CYP2D6.'},
+  ]},
+  {sys:'ANESTHESIA DRUGS',items:[
+    {n:'Succinylcholine / MH History',a:'TIVA ONLY. Avoid ALL volatile agents AND succinylcholine. Dantrolene immediately available. Alert entire team.'},
+    {n:'Rocuronium',a:'Most common cause of anaphylaxis during anesthesia. Alternative: vecuronium, cisatracurium. Have epinephrine drawn.'},
+    {n:'Propofol (egg/soy concern)',a:'True propofol allergy is rare. Egg/soy allergy: use with caution and monitor. True anaphylaxis: use etomidate or ketamine.'},
+    {n:'Latex',a:'FULL latex-free environment required. Latex-free gloves, tubing, IV ports, tape. Alert OR team, PACU, and all consulting teams.'},
+    {n:'Amide Local Anesthetics (lidocaine, bupivacaine)',a:'True amide LA allergy extremely rare. Most "allergies" are vasovagal or preservative reactions. True allergy: use ester class (chloroprocaine, tetracaine).'},
+  ]},
+  {sys:'CONTRAST / DYES',items:[
+    {n:'Iodinated Contrast',a:'Pre-medicate: methylprednisolone 32 mg PO 12h pre AND 2h pre, diphenhydramine 50 mg IV 1h pre. Use low-osmolar contrast.'},
+    {n:'Methylene Blue',a:'Check SSRI/SNRI/MAOI use BEFORE administering — serotonin toxicity risk. Check G6PD status.'},
+  ]},
+  {sys:'CARDIAC DRUGS',items:[
+    {n:'ACE Inhibitors — Angioedema',a:'ACE-I angioedema can be life-threatening and affect the airway. Use ARBs if still needed. Alert airway team.'},
+    {n:'Heparin (HIT)',a:'HIT II = ABSOLUTE contraindication to ALL heparin including flushes. Use argatroban or bivalirudin. Alert entire team prominently.'},
+    {n:'Protamine',a:'High-risk: prior vasectomy, fish allergy, prior protamine exposure, NPH insulin use. Have epinephrine drawn BEFORE administration.'},
+  ]},
+  {sys:'FOOD / ENVIRONMENTAL',items:[
+    {n:'Latex cross-reactive foods (banana, kiwi, avocado, chestnut)',a:'Full latex-free precautions even if allergy is food-only — significant cross-reactivity.'},
+    {n:'Shellfish (iodine concern)',a:'Shellfish allergy does NOT predict iodinated contrast allergy. Document but do not automatically premedicate based on shellfish alone.'},
+    {n:'Egg / soy allergy (propofol concern)',a:'True anaphylaxis from propofol in egg/soy allergy is rare. Use with caution. Alternative: etomidate or ketamine if severe allergy.'},
+    {n:'Adhesive / tape allergy',a:'Use paper tape or silk tape alternatives for all monitoring leads and dressings. Note on anesthesia plan.'},
+  ]},
+];
+
+// ════════════ STATE ════════════
+const S = {
+  machine: new Set(), asa15: new Set(), between: new Set(),
+  sb: new Set(),
+  medhx: new Set(), sxhx: new Set(), special: new Set(), allergies: new Set(),
+};
+
+// ════════════ NAV ════════════
+function showModule(id, btn) {
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('module-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function toggleCard(id) { document.getElementById(id).classList.toggle('open'); }
+
+// ════════════ CHECKLISTS ════════════
+function chk(stateKey, idx) {
+  const set = S[stateKey];
+  if (set.has(idx)) set.delete(idx); else set.add(idx);
+  const el = document.getElementById('cb-'+stateKey+'-'+idx);
+  if (el) el.classList.toggle('checked', set.has(idx));
+  updateMachineProgress();
+}
+
+function updateMachineProgress() {
+  const total = MSMAIDS.length + ASA15.length + BETWEEN.length;
+  const done = S.machine.size + S.asa15.size + S.between.size;
+  const pct = Math.round(done/total*100);
+  document.getElementById('machine-prog').style.width = pct+'%';
+  document.getElementById('machine-prog-label').textContent = done+' / '+total+' complete';
+}
+
+function resetMachine() {
+  if (!confirm('Reset all machine checklists?')) return;
+  ['machine','asa15','between'].forEach(k => {
+    S[k].clear();
+    document.querySelectorAll('[id^="cb-'+k+'-"]').forEach(e => e.classList.remove('checked'));
+  });
+  updateMachineProgress();
+}
+
+// ════════════ STOPBANG ════════════
+function toggleSB(i) {
+  if (S.sb.has(i)) S.sb.delete(i); else S.sb.add(i);
+  document.getElementById('sb-'+i).classList.toggle('checked', S.sb.has(i));
+  document.getElementById('sb-score').textContent = S.sb.size;
+}
+
+// ════════════ CONDITION SELECTORS ════════════
+function toggleCond(stateKey, key) {
+  if (S[stateKey].has(key)) S[stateKey].delete(key); else S[stateKey].add(key);
+  document.getElementById('cc-'+stateKey+'-'+key).classList.toggle('checked', S[stateKey].has(key));
+  updateSummary();
+}
+
+function updateSummary() {
+  // Med Hx
+  let mhNames = [];
+  MED_HX.forEach(sys => sys.conds.forEach((c,i) => {
+    if (S.medhx.has(sys.sys+'-'+i)) mhNames.push(c.n);
+  }));
+  document.getElementById('medhx-count').textContent = mhNames.length;
+  document.getElementById('medhx-active').textContent = mhNames.join(' · ') || '';
+
+  // Surg Hx
+  let sxNames = [];
+  SX_HX.forEach(sys => sys.conds.forEach((c,i) => {
+    if (S.sxhx.has(sys.sys+'-'+i)) sxNames.push(c);
+  }));
+  let spNames = [];
+  SPECIAL_FLAGS.forEach((f,i) => { if (S.special.has('sp-'+i)) spNames.push(f.n); });
+  document.getElementById('sxhx-count').textContent = sxNames.length;
+  document.getElementById('sxhx-active').textContent = sxNames.join(' · ') || '';
+
+  // Allergies
+  let alNames = [];
+  ALLERGIES.forEach(sys => sys.items.forEach((it,i) => {
+    if (S.allergies.has(sys.sys+'-'+i)) alNames.push(it.n);
+  }));
+  document.getElementById('allergy-count').textContent = alNames.length;
+  document.getElementById('allergy-active').textContent = alNames.join(' · ') || '';
+
+  // Patient Summary
+  const smhEl = document.getElementById('summary-medhx-list');
+  smhEl.innerHTML = mhNames.length
+    ? mhNames.map(n=>`<div class="summary-item"><div class="summary-dot"></div><div>${n}</div></div>`).join('')
+    : '<div class="summary-empty">No conditions selected in Medical History tab</div>';
+
+  const ssxEl = document.getElementById('summary-sxhx-list');
+  const allSx = [...sxNames, ...spNames];
+  ssxEl.innerHTML = allSx.length
+    ? allSx.map(n=>`<div class="summary-item"><div class="summary-dot"></div><div>${n}</div></div>`).join('')
+    : '<div class="summary-empty">No procedures selected in Surgical History tab</div>';
+
+  const salEl = document.getElementById('summary-allergy-list');
+  salEl.innerHTML = alNames.length
+    ? alNames.map(n=>`<div class="summary-item"><div class="summary-dot summary-dot-red"></div><div>${n}</div></div>`).join('')
+    : '<div class="summary-empty">No allergies selected in Allergies tab</div>';
+
+  document.getElementById('summary-cond-count').textContent = mhNames.length;
+  document.getElementById('summary-sx-count').textContent = sxNames.length;
+  document.getElementById('summary-allergy-count').textContent = alNames.length;
+  document.getElementById('summary-flag-count').textContent = spNames.length;
+}
+
+// ════════════ RENDERERS ════════════
+function catTag(cat) {
+  const map = {M:['tag-m','Machine'],S:['tag-s','Suction'],S2:['tag-mon','Monitors'],A:['tag-a','Airway'],I:['tag-i','IV'],D:['tag-d','Drugs']};
+  const [cls,lbl] = map[cat]||['tag-m',cat];
+  return `<span class="tag ${cls}">${lbl}</span>`;
+}
+
+function renderChecklist(items, containerId, stateKey, showNum=false) {
+  document.getElementById(containerId).innerHTML = items.map((item,i) => {
+    const label = typeof item === 'string' ? item : item.label;
+    const meta = item.normal || '';
+    const prefix = showNum ? `<span style="font-family:var(--mono);font-size:10px;color:var(--text-dimmer);margin-right:6px">${i+1}</span>` : (item.cat ? catTag(item.cat)+' ' : '');
+    return `<div class="check-item">
+      <div class="check-box" id="cb-${stateKey}-${i}" onclick="chk('${stateKey}',${i})"></div>
+      <div style="flex:1">
+        <div class="check-label">${prefix}${label}</div>
+        ${meta?`<div class="check-meta">${meta}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPimp(items, containerId) {
+  document.getElementById(containerId).innerHTML = items.map((item,i) => `
+    <div class="pimp-item">
+      <div class="pimp-q" onclick="this.closest('.pimp-item').classList.toggle('open')">
+        <span class="pimp-icon">⚡</span>
+        <span class="pimp-question">${item.q}</span>
+        <span class="pimp-toggle">▶</span>
+      </div>
+      <div class="pimp-answer">${item.a}</div>
+    </div>`).join('');
+}
+
+function renderMeds() {
+  document.getElementById('meds-body').innerHTML = MEDS.map(m => `
+    <div class="med-row">
+      <div class="med-name">${m.name}</div>
+      <span class="med-action action-${m.action}">${m.label}</span>
+      <div class="med-implication">${m.impl}</div>
+    </div>`).join('');
+}
+
+function renderSubstance() {
+  document.getElementById('substance-body').innerHTML = SUBSTANCE.map(s => `
+    <div class="med-row">
+      <div class="med-name">${s.s}</div>
+      ${s.flag?'<span class="med-action action-hold">HARD STOP</span>':''}
+      <div class="check-meta" style="margin-top:3px"><strong>${s.t}</strong></div>
+      <div class="med-implication">${s.n}</div>
+    </div>`).join('') +
+    '<div class="alert alert-red" style="margin-top:10px"><span>🔴</span><span><strong>HARD STOP — Delay surgery for:</strong> Acute intoxication (any) · Unstable vitals · Active withdrawal · Cocaine use today</span></div>';
+}
+
+function renderLabs() {
+  document.getElementById('labs-body').innerHTML = LABS.map(r => `
+    <tr>
+      <td style="font-family:var(--mono);font-weight:700;color:var(--teal)">${r[0]}</td>
+      <td style="color:var(--text-dim)">${r[1]}</td>
+      <td>${r[2]}</td>
+    </tr>`).join('');
+}
+
+function renderHardStops() {
+  document.getElementById('hardstop-body').innerHTML = HARD_STOPS.map(s => `
+    <div class="hardstop-item"><div class="hardstop-dot"></div><div>${s}</div></div>`).join('');
+}
+
+function renderSuccsCI() {
+  document.getElementById('succs-body').innerHTML = SUCCS_CI.map(s => `
+    <div class="hardstop-item"><div class="hardstop-dot"></div><div>${s}</div></div>`).join('');
+}
+
+function renderSTOPBANG() {
+  document.getElementById('stopbang-body').innerHTML = STOPBANG.map((item,i) => `
+    <div class="check-item">
+      <div class="check-box" id="sb-${i}" onclick="toggleSB(${i})"></div>
+      <div style="flex:1">
+        <div class="check-label"><strong style="color:var(--gold);font-family:var(--mono)">${item.l}</strong> — ${item.q}</div>
+        <div class="check-meta">${item.d}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderMedHx() {
+  document.getElementById('medhx-body').innerHTML = MED_HX.map(sys => `
+    <div class="card" id="card-mh-${sys.sys}">
+      <div class="card-header" onclick="toggleCard('card-mh-${sys.sys}')">
+        <div class="card-title" style="color:${sys.color}">${sys.sys}</div>
+        <span class="card-chevron">▼</span>
+      </div>
+      <div class="card-body">
+        ${sys.conds.map((c,i) => `
+          <div class="cond-row">
+            <div class="cond-check" id="cc-medhx-${sys.sys}-${i}" onclick="toggleCond('medhx','${sys.sys}-${i}')"></div>
+            <div style="flex:1">
+              <div class="cond-name">${c.n}</div>
+              <div class="cond-impl">${c.i}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderSxHx() {
+  document.getElementById('special-flags-body').innerHTML = SPECIAL_FLAGS.map((f,i) => `
+    <div class="cond-row">
+      <div class="cond-check" id="cc-special-sp-${i}" onclick="toggleCond('special','sp-${i}')"></div>
+      <div style="flex:1">
+        <div class="cond-name" style="color:var(--red)">${f.n}</div>
+        <div class="cond-impl">${f.a}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('sxhx-body').innerHTML = SX_HX.map(sys => `
+    <div class="card" id="card-sx-${sys.sys}">
+      <div class="card-header" onclick="toggleCard('card-sx-${sys.sys}')">
+        <div class="card-title">${sys.sys}</div>
+        <span class="card-chevron">▼</span>
+      </div>
+      <div class="card-body">
+        ${sys.conds.map((c,i) => `
+          <div class="cond-row">
+            <div class="cond-check" id="cc-sxhx-${sys.sys}-${i}" onclick="toggleCond('sxhx','${sys.sys}-${i}')"></div>
+            <div style="flex:1"><div class="cond-name">${c}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderAllergies() {
+  document.getElementById('allergy-body').innerHTML = ALLERGIES.map(sys => `
+    <div class="card" id="card-al-${sys.sys}">
+      <div class="card-header" onclick="toggleCard('card-al-${sys.sys}')">
+        <div class="card-title">${sys.sys}</div>
+        <span class="card-chevron">▼</span>
+      </div>
+      <div class="card-body">
+        ${sys.items.map((it,i) => `
+          <div class="cond-row">
+            <div class="cond-check" id="cc-allergies-${sys.sys}-${i}" onclick="toggleCond('allergies','${sys.sys}-${i}')"></div>
+            <div style="flex:1">
+              <div class="cond-name">${it.n}</div>
+              <div class="cond-impl">${it.a}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ════════════ INIT ════════════
+function init() {
+  renderChecklist(MSMAIDS, 'msmaids-body', 'machine');
+  renderChecklist(ASA15, 'asa15-body', 'asa15', true);
+  renderChecklist(BETWEEN, 'between-body', 'between', true);
+  renderPimp(MACHINE_PIMP, 'machine-pimp-body');
+  renderSTOPBANG();
+  renderMeds();
+  renderSubstance();
+  renderLabs();
+  renderPimp(PREOP_PIMP, 'preop-pimp-body');
+  renderHardStops();
+  renderSuccsCI();
+  renderMedHx();
+  renderSxHx();
+  renderAllergies();
+  updateMachineProgress();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
