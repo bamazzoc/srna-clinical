@@ -180,6 +180,13 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--sans);font-si
 .count-val{font-family:var(--mono);font-size:22px;color:var(--teal)}
 .count-label{font-size:10px;color:var(--text-dimmer);margin-top:2px}
 
+/* INFO FIELDS */
+.info-field{margin-bottom:4px}
+.info-label{font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:3px}
+.info-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:13px;color:var(--text);min-height:28px;outline:none;transition:border-color .15s}
+.info-input:focus{border-color:var(--teal)}
+.info-input:empty::before{content:attr(placeholder);color:var(--text-dimmer);font-style:italic}
+
 /* RESET BTN */
 .reset-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:var(--cond);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:all .2s;width:100%;margin-top:12px}
 .reset-btn:hover{background:var(--bg4);color:var(--text)}
@@ -261,41 +268,286 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--sans);font-si
 <div class="module" id="module-preop">
   <div class="module-hero">
     <div class="module-hero-title">Module 2 — Pre-Operative Assessment</div>
-    <div class="module-hero-sub">LEMON · STOP-BANG · NPO · Meds · Labs · Anesthesia Plan</div>
+    <div class="module-hero-sub">Patient Info · Vitals · NPO · Airway · Exam · Labs · Anesthesia Plan · STOP-BANG · Pimp Q&A</div>
   </div>
 
+  <!-- PATIENT INFO -->
+  <div class="card open" id="card-ptinfo">
+    <div class="card-header" onclick="toggleCard('card-ptinfo')">
+      <div><div class="card-title">Patient Information</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="info-field"><div class="info-label">Procedure</div><div class="info-input" contenteditable="true" placeholder="Enter procedure"></div></div>
+        <div class="info-field"><div class="info-label">Diagnosis / Indication</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">Age</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">Ht / Wt / BMI</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">MRN / DOB</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">NPO Status — Last ate/drank</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">Surgeon</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">CRNA / Attending</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">ASA Status</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">Date / Time</div><div class="info-input" contenteditable="true"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VITAL SIGNS -->
+  <div class="card" id="card-vitals">
+    <div class="card-header" onclick="toggleCard('card-vitals')">
+      <div><div class="card-title">Vital Signs</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table">
+        <thead><tr><th>Parameter</th><th>Value</th><th>Normal Range</th><th>Flag</th></tr></thead>
+        <tbody>
+          <tr><td>BP (mmHg)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td style="color:var(--text-dim)">90–140 / 60–90</td><td id="flag-bp" style="font-family:var(--mono);font-size:11px;color:var(--red)"></td></tr>
+          <tr><td>HR (bpm)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td style="color:var(--text-dim)">60–100</td><td></td></tr>
+          <tr><td>RR (breaths/min)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td style="color:var(--text-dim)">12–20</td><td></td></tr>
+          <tr><td>SpO₂ (%)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td style="color:var(--text-dim)">≥94% (RA)</td><td></td></tr>
+          <tr><td>Temp (°C)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td style="color:var(--text-dim)">36.1–37.2</td><td></td></tr>
+          <tr><td>Weight (kg)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td style="color:var(--text-dim)">Actual / LBW / IBW</td><td></td></tr>
+          <tr><td>Height (cm)</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NPO -->
   <div class="card open" id="card-npo">
     <div class="card-header" onclick="toggleCard('card-npo')">
-      <div><div class="card-title">NPO Fasting Guidelines</div></div><span class="card-chevron">▼</span>
+      <div><div class="card-title">NPO Status — ASA Fasting Guidelines</div></div><span class="card-chevron">▼</span>
     </div>
     <div class="card-body">
-      <div class="npo-row"><div class="npo-time">2 hr</div><div>Clear liquids — water, juice, black coffee, clear tea</div></div>
-      <div class="npo-row"><div class="npo-time">4 hr</div><div>Breast milk</div></div>
-      <div class="npo-row"><div class="npo-time">6 hr</div><div>Infant formula / non-human milk</div></div>
-      <div class="npo-row"><div class="npo-time">6 hr</div><div>Light meal — toast, crackers, fruit</div></div>
-      <div class="npo-row"><div class="npo-time">8+ hr</div><div>Heavy meal — fried, fatty, meat</div></div>
-      <div class="npo-row" style="border-bottom:none"><div class="npo-time" style="color:var(--red)">1 WK</div><div><div>GLP-1 agonists (Ozempic, Wegovy, Mounjaro)</div><div style="font-size:11px;color:var(--red);margin-top:2px">⚠ Delayed gastric emptying — treat as full stomach if not held</div></div></div>
-      <div class="alert alert-gold" style="margin-top:10px"><span>💬</span><span>Chewing gum = treat as NPO violation — stimulates gastric acid</span></div>
+      <table class="ref-table">
+        <thead><tr><th>Ingested Material</th><th>Min Fast</th><th>Last Consumed</th><th>Compliant?</th></tr></thead>
+        <tbody>
+          <tr><td>Clear liquids (water, juice, coffee)</td><td style="font-family:var(--mono);color:var(--teal)">2 hr</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td></td></tr>
+          <tr><td>Breast milk</td><td style="font-family:var(--mono);color:var(--teal)">4 hr</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td></td></tr>
+          <tr><td>Infant formula / non-human milk</td><td style="font-family:var(--mono);color:var(--teal)">6 hr</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td></td></tr>
+          <tr><td>Light meal (toast, crackers)</td><td style="font-family:var(--mono);color:var(--teal)">6 hr</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td></td></tr>
+          <tr><td>Heavy meal (fried, fatty, meat)</td><td style="font-family:var(--mono);color:var(--teal)">8+ hr</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td></td></tr>
+          <tr><td style="color:var(--red)">GLP-1 agonist (Ozempic, Wegovy)</td><td style="font-family:var(--mono);color:var(--red)">1 WEEK</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td></td></tr>
+          <tr><td>Chewing gum</td><td colspan="3" style="color:var(--gold);font-size:11px">Treat as NPO violation — stimulates gastric acid</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
+  <!-- ALLERGIES SUMMARY -->
+  <div class="card" id="card-allergy-summary">
+    <div class="card-header" onclick="toggleCard('card-allergy-summary')">
+      <div><div class="card-title">Allergies</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Drug · Latex · Food · Environmental</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="info-field" style="margin-bottom:8px"><div class="info-label">Drug Allergies</div><div class="info-input" contenteditable="true" style="min-height:40px"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="info-field"><div class="info-label">Latex Allergy?</div><div class="info-input" contenteditable="true"></div></div>
+        <div class="info-field"><div class="info-label">Food / Environmental</div><div class="info-input" contenteditable="true"></div></div>
+      </div>
+      <div class="alert alert-gold" style="margin-top:10px"><span>⚠</span><span>PCN allergy + rash only → cefazolin usually safe (~1% cross-react). Anaphylaxis → vancomycin or clindamycin for surgical prophylaxis.</span></div>
+    </div>
+  </div>
+
+  <!-- MEDICATIONS -->
+  <div class="card" id="card-meds">
+    <div class="card-header" onclick="toggleCard('card-meds')">
+      <div><div class="card-title">Medications — MAR Review + Day-of Status</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="meds-body"></div>
+  </div>
+
+  <!-- SOCIAL HISTORY / SUBSTANCE -->
+  <div class="card" id="card-substance">
+    <div class="card-header" onclick="toggleCard('card-substance')">
+      <div><div class="card-title">Social History — Substance Use</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" id="substance-body"></div>
+  </div>
+
+  <!-- MEDICAL HISTORY SUMMARY -->
+  <div class="card" id="card-medhx-summary">
+    <div class="card-header" onclick="toggleCard('card-medhx-summary')">
+      <div><div class="card-title">Major Medical History — System Review</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table">
+        <thead><tr><th>System</th><th>Condition / History</th><th>Present?</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--red)">CV</td><td>HTN / CAD / MI / Stents / CHF / AFib</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--red)">CV</td><td>Valvular disease (AS, MS, MR, AR)</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--red)">CV</td><td>Pacemaker / ICD / AICD</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--blue)">PULM</td><td>Asthma / COPD / Emphysema</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--blue)">PULM</td><td>OSA (STOP-BANG ≥3?)</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--gold)">ENDO</td><td>Diabetes (IDDM / NIDDM)</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--gold)">ENDO</td><td>Thyroid disease (hyper / hypo)</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--gold)">ENDO</td><td>Obesity (BMI) / Morbid obesity</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--purple)">NEURO</td><td>Seizures / Epilepsy</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--purple)">NEURO</td><td>CVA / TIA / Head trauma</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--green)">GI</td><td>GERD / Hiatal hernia / GI bleed</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--green)">GI</td><td>Cirrhosis / Hepatitis / Liver disease</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--teal)">RENAL</td><td>CKD / ESRD / Dialysis / AKI</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--blue)">HEME</td><td>Anemia / Bleeding disorder / Anticoag</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--text-dim)">MSK</td><td>Arthritis / RA / Scoliosis / C-spine</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--purple)">ONC</td><td>Active malignancy / Prior chemo/XRT</td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="color:var(--text-dim)">OTHER</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+        </tbody>
+      </table>
+      <div class="fluid-box" style="margin-top:10px">
+        <div class="fluid-title">Functional Status — METs Estimate</div>
+        <div class="fluid-row"><span style="font-family:var(--mono);color:var(--red)">1 MET</span><span>Sitting, reading, resting</span></div>
+        <div class="fluid-row"><span style="font-family:var(--mono);color:var(--red)">1–2</span><span>Getting dressed, showering, walking around house</span></div>
+        <div class="fluid-row"><span style="font-family:var(--mono);color:var(--gold)">3–4</span><span>Walking flat ground 3–4 mph, climbing one flight of stairs</span></div>
+        <div class="fluid-row"><span style="font-family:var(--mono);color:var(--teal)">4–6</span><span>Walking fast, heavy cleaning, gardening</span></div>
+        <div class="fluid-row" style="border-bottom:none"><span style="font-family:var(--mono);color:var(--green)">&gt;6</span><span>Jogging, cycling, vigorous sports</span></div>
+      </div>
+      <div class="info-field" style="margin-top:8px"><div class="info-label">Patient's Estimated METs</div><div class="info-input" contenteditable="true"></div></div>
+    </div>
+  </div>
+
+  <!-- PRIOR SURGICAL / ANESTHESIA HISTORY -->
+  <div class="card" id="card-prior-sx">
+    <div class="card-header" onclick="toggleCard('card-prior-sx')">
+      <div><div class="card-title">Prior Surgical &amp; Anesthesia History</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table">
+        <thead><tr><th>#</th><th>Prior Procedure</th><th>Date (approx)</th><th>Complication?</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td style="font-family:var(--mono);color:var(--text-dimmer)">1</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--text-dimmer)">2</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--text-dimmer)">3</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--text-dimmer)">4</td><td><div class="info-input" contenteditable="true" style="min-width:80px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:40px"></div></td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-red" style="margin-top:10px"><span>⚠</span><span>Family hx of MH → use TIVA (propofol), avoid volatile agents + succinylcholine. Pseudocholinesterase deficiency → avoid succinylcholine.</span></div>
+    </div>
+  </div>
+
+  <!-- LEMON AIRWAY -->
   <div class="card open" id="card-lemon">
     <div class="card-header" onclick="toggleCard('card-lemon')">
-      <div><div class="card-title">LEMON Airway Evaluation</div></div><span class="card-chevron">▼</span>
+      <div><div class="card-title">Airway Evaluation — LEMON + Physical</div></div><span class="card-chevron">▼</span>
     </div>
     <div class="card-body">
-      <div class="lemon-row"><div class="lemon-letter">L</div><div><div class="lemon-label">Look Externally</div><div class="lemon-detail">Beard, receding chin, macroglossia, facial trauma, short/thick neck, radiation changes</div></div></div>
-      <div class="lemon-row"><div class="lemon-letter">E</div><div><div class="lemon-label">Evaluate 3-3-2 Rule</div><div class="lemon-detail">Mouth opening ≥3 fingers · Chin to hyoid ≥3 fingers · Hyoid to thyroid notch ≥2 fingers</div></div></div>
-      <div class="lemon-row"><div class="lemon-letter">M</div><div><div class="lemon-label">Mallampati Class</div><div class="lemon-detail">Open mouth + protrude tongue. Class I–II = favorable. Class III–IV = video laryngoscope as primary</div></div></div>
-      <div class="lemon-row"><div class="lemon-letter">O</div><div><div class="lemon-label">Obstruction</div><div class="lemon-detail">Tumor, abscess, epiglottitis, goiter, angioedema, tracheal deviation, hematoma</div></div></div>
-      <div class="lemon-row" style="border-bottom:none"><div class="lemon-letter">N</div><div><div class="lemon-label">Neck Mobility</div><div class="lemon-detail">Flex/extension ROM · C-spine disease · RA · Halo/collar · Ankylosing spondylitis</div></div></div>
-      <div class="alert alert-red" style="margin-top:10px"><span>🔴</span><span>MP III–IV → VL primary. Multiple predictors → awake FOI. Document Plan A→B→C→D before induction.</span></div>
+      <table class="ref-table">
+        <thead><tr><th>Component</th><th>Assessment</th><th>Finding</th><th>Normal / Goal</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">L</td><td>Look Externally — beard, receding chin, macroglossia, trauma, thick neck, radiation</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">None of concern</td></tr>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">E</td><td>Mouth opening ≥3 fingers (≥4.5 cm)</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">≥3 finger breadths</td></tr>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">E</td><td>Mentum to hyoid — 3 fingers</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">≥3 finger breadths</td></tr>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">E</td><td>Hyoid to thyroid notch — 2 fingers</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">≥2 finger breadths</td></tr>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">M</td><td>Mallampati — open mouth + protrude tongue</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">Class I or II</td></tr>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">O</td><td>Obstruction — tumor, abscess, epiglottitis, goiter, angioedema</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">None</td></tr>
+          <tr><td style="color:var(--gold);font-family:var(--mono)">N</td><td>Neck mobility — flex/extend, C-spine disease, RA, collar</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">Full ROM</td></tr>
+          <tr><td style="color:var(--text-dim)">Teeth</td><td>Loose teeth, dentures, caps, crowns, veneers, missing</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">Intact / no loose</td></tr>
+          <tr><td style="color:var(--text-dim)">Jaw</td><td>Lower teeth in front of upper? (underbite test)</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">Yes = favorable</td></tr>
+          <tr><td style="color:var(--text-dim)">TMD</td><td>Thyromental distance — chin to thyroid notch</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">≥3 finger breadths</td></tr>
+          <tr><td style="color:var(--text-dim)">Beard</td><td>Beard present? Mask seal concern?</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="color:var(--text-dim)">No barrier</td></tr>
+        </tbody>
+      </table>
+      <div class="info-field" style="margin-top:10px"><div class="info-label">Anticipated Airway Difficulty / Plan</div><div class="info-input" contenteditable="true" style="min-height:40px"></div></div>
+      <div class="alert alert-red" style="margin-top:8px"><span>🔴</span><span>MP III–IV → VL as primary tool. Multiple difficult predictors → awake fiberoptic. Document backup plan A→B→C→D.</span></div>
     </div>
   </div>
 
+  <!-- PHYSICAL EXAM -->
+  <div class="card" id="card-physexam">
+    <div class="card-header" onclick="toggleCard('card-physexam')">
+      <div><div class="card-title">Physical Examination</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table">
+        <thead><tr><th>System</th><th>Assessment Item</th><th>Finding</th><th>Abnormal Flags</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--red)">CARDIAC</td><td>Heart rate and rhythm (auscultation)</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Irregular, S3, S4, murmur</td></tr>
+          <tr><td style="color:var(--red)">CARDIAC</td><td>Murmur — location, grade, radiation</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">New murmur → workup before elective</td></tr>
+          <tr><td style="color:var(--red)">CARDIAC</td><td>JVD assessment</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">JVD → R-sided HF</td></tr>
+          <tr><td style="color:var(--red)">CARDIAC</td><td>Peripheral edema (grade 0–4+)</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Pitting edema → HF/venous insufficiency</td></tr>
+          <tr><td style="color:var(--blue)">PULM</td><td>Breath sounds bilateral (auscultation)</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Wheeze, crackles, rhonchi, diminished</td></tr>
+          <tr><td style="color:var(--blue)">PULM</td><td>Work of breathing / accessory muscles</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Retractions → severe obstruction</td></tr>
+          <tr><td style="color:var(--text-dim)">GEN</td><td>General appearance / level of distress</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Cachectic, obtunded, diaphoretic</td></tr>
+          <tr><td style="color:var(--text-dim)">GEN</td><td>Neurologic baseline (LOC, orientation)</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Document pre-existing deficits</td></tr>
+          <tr><td style="color:var(--text-dim)">SKIN</td><td>Cyanosis / pallor / jaundice / rash</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Jaundice → hepatic; cyanosis → hypoxemia</td></tr>
+          <tr><td style="color:var(--text-dim)">NECK</td><td>Goiter / masses / tracheal deviation</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Goiter → difficult airway</td></tr>
+          <tr><td style="color:var(--teal)">IV</td><td>IV site, patency, edema at site</td><td><div class="info-input" contenteditable="true" style="min-width:60px"></div></td><td style="font-size:11px;color:var(--text-dim)">Ensure functional access</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LABS -->
+  <div class="card" id="card-labs">
+    <div class="card-header" onclick="toggleCard('card-labs')">
+      <div><div class="card-title">Laboratory Results</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="ref-table">
+        <thead><tr><th>Lab</th><th>Value</th><th>Normal</th><th>Critical Threshold</th></tr></thead>
+        <tbody id="labs-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ANESTHESIA PLAN -->
+  <div class="card open" id="card-anes-plan">
+    <div class="card-header" onclick="toggleCard('card-anes-plan')">
+      <div><div class="card-title">Anesthesia Plan</div><div style="font-size:11px;color:var(--teal);margin-top:2px">Type · Airway · Drugs · Monitoring · Fluids · Positioning</div></div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="info-field"><div class="info-label">Type of Anesthesia</div><div class="info-input" contenteditable="true">General (ETT)</div></div>
+        <div class="info-field"><div class="info-label">Primary Airway Device</div><div class="info-input" contenteditable="true">ETT</div></div>
+        <div class="info-field"><div class="info-label">ETT Size</div><div class="info-input" contenteditable="true">7.0</div></div>
+        <div class="info-field"><div class="info-label">Blade Type</div><div class="info-input" contenteditable="true">Mac 3</div></div>
+        <div class="info-field"><div class="info-label">Induction Agent</div><div class="info-input" contenteditable="true">Propofol</div></div>
+        <div class="info-field"><div class="info-label">Paralytic</div><div class="info-input" contenteditable="true">Succinylcholine</div></div>
+        <div class="info-field"><div class="info-label">Reversal Agent</div><div class="info-input" contenteditable="true">Sugammadex</div></div>
+        <div class="info-field"><div class="info-label">RSI Indicated?</div><div class="info-input" contenteditable="true">No — standard induction</div></div>
+        <div class="info-field"><div class="info-label">Planned Monitoring</div><div class="info-input" contenteditable="true">Standard</div></div>
+        <div class="info-field"><div class="info-label">PONV Prophylaxis</div><div class="info-input" contenteditable="true">Ondansetron</div></div>
+        <div class="info-field"><div class="info-label">Positioning</div><div class="info-input" contenteditable="true">Supine</div></div>
+        <div class="info-field"><div class="info-label">Fluid Type</div><div class="info-input" contenteditable="true">Lactated Ringer's</div></div>
+        <div class="info-field"><div class="info-label">Estimated Case Length</div><div class="info-input" contenteditable="true">1–2 hours</div></div>
+        <div class="info-field"><div class="info-label">Patient Agrees to Plan?</div><div class="info-input" contenteditable="true">Yes — General</div></div>
+      </div>
+
+      <!-- FLUID CALCULATIONS -->
+      <div class="fluid-box">
+        <div class="fluid-title">Fluid Calculations</div>
+        <div class="fluid-row"><span>NPO Hours</span><div class="info-input" contenteditable="true" id="npo-hrs" oninput="calcFluids()" style="min-width:60px;font-family:var(--mono);color:var(--teal)">8</div></div>
+        <div class="fluid-row"><span>Weight (kg)</span><div class="info-input" contenteditable="true" id="pt-wt" oninput="calcFluids()" style="min-width:60px;font-family:var(--mono);color:var(--teal)">80</div></div>
+        <div class="fluid-row"><span>Evap. Loss Rate (mL/kg/hr)</span><div class="info-input" contenteditable="true" id="evap-rate" oninput="calcFluids()" style="min-width:60px;font-family:var(--mono);color:var(--teal)">2</div><span style="font-size:10px;color:var(--text-dimmer)">Min:2–4 Mod:4–6 Large:6–8+</span></div>
+        <div class="fluid-row"><span>Maintenance Rate (mL/hr)</span><span class="fluid-val" id="maint-rate">120</span></div>
+        <div class="fluid-row"><span>NPO Deficit Total (mL)</span><span class="fluid-val" id="npo-deficit">960</span></div>
+        <div class="fluid-row" style="border-bottom:none"><span>Estimated Blood Loss (mL)</span><div class="info-input" contenteditable="true" style="min-width:80px;font-family:var(--mono);color:var(--teal)"></div></div>
+      </div>
+
+      <!-- HOURLY FLUID TABLE -->
+      <div class="fluid-box" style="margin-top:8px">
+        <div class="fluid-title">Hourly Fluid Totals (mL/hr)</div>
+        <table class="ref-table" style="margin-top:4px">
+          <thead><tr><th>Component</th><th>Hour 1</th><th>Hour 2</th><th>Hour 3</th><th>Hour 4</th></tr></thead>
+          <tbody>
+            <tr><td>Maintenance</td><td id="h-maint-1" style="font-family:var(--mono);color:var(--teal)">120</td><td id="h-maint-2" style="font-family:var(--mono);color:var(--teal)">120</td><td id="h-maint-3" style="font-family:var(--mono);color:var(--teal)">120</td><td id="h-maint-4" style="font-family:var(--mono);color:var(--teal)">120</td></tr>
+            <tr><td>NPO Replacement</td><td id="h-npo-1" style="font-family:var(--mono);color:var(--blue)">480</td><td id="h-npo-2" style="font-family:var(--mono);color:var(--blue)">240</td><td id="h-npo-3" style="font-family:var(--mono);color:var(--blue)">240</td><td id="h-npo-4" style="font-family:var(--mono);color:var(--blue)">0</td></tr>
+            <tr><td>Evaporative Loss</td><td id="h-evap-1" style="font-family:var(--mono);color:var(--purple)">160</td><td id="h-evap-2" style="font-family:var(--mono);color:var(--purple)">160</td><td id="h-evap-3" style="font-family:var(--mono);color:var(--purple)">160</td><td id="h-evap-4" style="font-family:var(--mono);color:var(--purple)">160</td></tr>
+            <tr style="border-top:1px solid var(--border-bright)"><td style="font-weight:700">Total (mL/hr)</td><td id="h-tot-1" style="font-family:var(--mono);color:var(--gold);font-weight:700">760</td><td id="h-tot-2" style="font-family:var(--mono);color:var(--gold);font-weight:700">520</td><td id="h-tot-3" style="font-family:var(--mono);color:var(--gold);font-weight:700">520</td><td id="h-tot-4" style="font-family:var(--mono);color:var(--gold);font-weight:700">280</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <div class="info-field"><div class="info-label">CRNA Signature</div><div class="info-input" contenteditable="true" style="min-height:30px"></div></div>
+        <div class="info-field"><div class="info-label">Date / Time</div><div class="info-input" contenteditable="true"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOP-BANG -->
   <div class="card" id="card-stopbang">
     <div class="card-header" onclick="toggleCard('card-stopbang')">
-      <div><div class="card-title">STOP-BANG — OSA Screening</div></div><span class="card-chevron">▼</span>
+      <div><div class="card-title">STOP-BANG — OSA Risk Screening</div></div><span class="card-chevron">▼</span>
     </div>
     <div class="card-body">
       <div id="stopbang-body"></div>
@@ -304,37 +556,15 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--sans);font-si
         <div class="fluid-title">Interpretation</div>
         <div class="fluid-row"><span>0–2</span><span class="fluid-val" style="color:var(--green)">Low Risk</span></div>
         <div class="fluid-row"><span>3–4</span><span class="fluid-val" style="color:var(--gold)">Intermediate Risk</span></div>
-        <div class="fluid-row" style="border-bottom:none"><span>5–8</span><span class="fluid-val" style="color:var(--red)">High Risk → ↓ opioids, CPAP PACU</span></div>
+        <div class="fluid-row" style="border-bottom:none"><span>5–8</span><span class="fluid-val" style="color:var(--red)">High Risk → ↓ opioids, CPAP PACU, semi-upright, extended monitoring</span></div>
       </div>
     </div>
   </div>
 
-  <div class="card" id="card-meds">
-    <div class="card-header" onclick="toggleCard('card-meds')">
-      <div><div class="card-title">Perioperative Medication Management</div></div><span class="card-chevron">▼</span>
-    </div>
-    <div class="card-body" id="meds-body"></div>
-  </div>
-
-  <div class="card" id="card-substance">
-    <div class="card-header" onclick="toggleCard('card-substance')">
-      <div><div class="card-title">Substance Use &amp; Hard Stops</div></div><span class="card-chevron">▼</span>
-    </div>
-    <div class="card-body" id="substance-body"></div>
-  </div>
-
-  <div class="card" id="card-labs">
-    <div class="card-header" onclick="toggleCard('card-labs')">
-      <div><div class="card-title">Critical Lab Thresholds</div></div><span class="card-chevron">▼</span>
-    </div>
-    <div class="card-body">
-      <table class="ref-table"><thead><tr><th>Lab</th><th>Normal</th><th>Action Threshold</th></tr></thead><tbody id="labs-body"></tbody></table>
-    </div>
-  </div>
-
+  <!-- PIMP QA -->
   <div class="card open" id="card-preop-pimp">
     <div class="card-header" onclick="toggleCard('card-preop-pimp')">
-      <div><div class="card-title">⚡ Pimp Q&amp;A — Pre-op</div></div><span class="card-chevron">▼</span>
+      <div><div class="card-title">⚡ Pimp Q&amp;A — Pre-op Assessment</div></div><span class="card-chevron">▼</span>
     </div>
     <div class="card-body" id="preop-pimp-body"></div>
   </div>
@@ -902,6 +1132,39 @@ function updateSummary() {
   document.getElementById('summary-flag-count').textContent = spNames.length;
 }
 
+// ════════════ FLUID CALCULATOR ════════════
+function calcFluids() {
+  const wt = parseFloat(document.getElementById('pt-wt')?.innerText) || 80;
+  const npoHrs = parseFloat(document.getElementById('npo-hrs')?.innerText) || 8;
+  const evapRate = parseFloat(document.getElementById('evap-rate')?.innerText) || 2;
+
+  // 4-2-1 rule maintenance
+  let maint;
+  if (wt <= 10) maint = wt * 4;
+  else if (wt <= 20) maint = 40 + (wt - 10) * 2;
+  else maint = 60 + (wt - 20) * 1;
+
+  const npoDeficit = maint * npoHrs;
+  const evap = evapRate * wt;
+
+  // NPO replacement: 50% hr1, 25% hr2, 25% hr3
+  const npo1 = npoDeficit * 0.5;
+  const npo2 = npoDeficit * 0.25;
+  const npo3 = npoDeficit * 0.25;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = Math.round(val); };
+
+  set('maint-rate', maint);
+  set('npo-deficit', npoDeficit);
+  set('h-maint-1', maint); set('h-maint-2', maint); set('h-maint-3', maint); set('h-maint-4', maint);
+  set('h-npo-1', npo1); set('h-npo-2', npo2); set('h-npo-3', npo3); set('h-npo-4', 0);
+  set('h-evap-1', evap); set('h-evap-2', evap); set('h-evap-3', evap); set('h-evap-4', evap);
+  set('h-tot-1', maint + npo1 + evap);
+  set('h-tot-2', maint + npo2 + evap);
+  set('h-tot-3', maint + npo3 + evap);
+  set('h-tot-4', maint + 0 + evap);
+}
+
 // ════════════ RENDERERS ════════════
 function catTag(cat) {
   const map = {M:['tag-m','Machine'],S:['tag-s','Suction'],S2:['tag-mon','Monitors'],A:['tag-a','Airway'],I:['tag-i','IV'],D:['tag-d','Drugs']};
@@ -957,11 +1220,31 @@ function renderSubstance() {
 }
 
 function renderLabs() {
-  document.getElementById('labs-body').innerHTML = LABS.map(r => `
+  const LABS_FULL = [
+    ['Hgb (g/dL)','12–17','< 7 → transfusion threshold'],
+    ['Hct (%)','36–50',''],
+    ['Platelets (k/μL)','150–400','< 80k → neuraxial caution / < 50k → contraindicated'],
+    ['WBC (k/μL)','4.5–11','Elevated → active infection'],
+    ['Na+ (mEq/L)','135–145','Severe dysnatremia → CNS risk'],
+    ['K+ (mEq/L)','3.5–5.0','> 5.5 → avoid succinylcholine'],
+    ['Cl- (mEq/L)','98–106',''],
+    ['CO₂/Bicarb (mEq/L)','22–29',''],
+    ['BUN (mg/dL)','7–20','Elevated → renal impairment'],
+    ['Creatinine (mg/dL)','0.6–1.2','Elevated → adjust drug dosing'],
+    ['Glucose (mg/dL)','70–100','< 70 → treat before surgery; > 180 → optimize'],
+    ['PT (sec)','11–13.5',''],
+    ['INR','0.8–1.2','> 1.5 → coagulopathy; neuraxial concern'],
+    ['aPTT (sec)','25–35','Elevated → heparin effect or factor deficiency'],
+    ['HCG','Negative','Any positive → surgery implications'],
+    ['Type & Screen','Done','Required if blood loss anticipated'],
+    ['ABG (if applicable)','',''],
+  ];
+  document.getElementById('labs-body').innerHTML = LABS_FULL.map(r => `
     <tr>
-      <td style="font-family:var(--mono);font-weight:700;color:var(--teal)">${r[0]}</td>
-      <td style="color:var(--text-dim)">${r[1]}</td>
-      <td>${r[2]}</td>
+      <td style="font-family:var(--mono);font-weight:700;color:var(--teal);white-space:nowrap">${r[0]}</td>
+      <td><div class="info-input" contenteditable="true" style="min-width:70px"></div></td>
+      <td style="color:var(--text-dim);font-size:11px">${r[1]}</td>
+      <td style="font-size:11px;color:var(--red)">${r[2]}</td>
     </tr>`).join('');
 }
 
